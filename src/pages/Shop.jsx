@@ -14,8 +14,13 @@ export default function Shop() {
 
   const whatsappBase = useMemo(() => "https://wa.me/60133300069", []);
 
-  function enquiryLink(item) {
-    const msg = `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n• Part: ${item.name}\n• Price: RM ${item.price || "-"}\n• Branch: ${item.branch || "-"}\n\nBoleh confirm availability & pemasangan?`;
+  const branches = useMemo(
+    () => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"],
+    []
+  );
+
+  function enquiryLink(item, installBranch) {
+    const msg = `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n• Part: ${item.name}\n• Price: RM ${item.price || "-"}\n• Suggested branch: ${item.branch || "-"}\n• Install at: ${installBranch || "Not selected"}\n\nBoleh confirm availability & pemasangan?`;
     return `${whatsappBase}?text=${encodeURIComponent(msg)}`;
   }
 
@@ -24,8 +29,8 @@ export default function Shop() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold text-center mb-4">Shop (Draft)</h1>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          This is a draft catalogue. Items are added from the Admin Dashboard.
-          For availability and installation, tap WhatsApp on an item.
+          Items are added from the Admin Dashboard. Choose your installation branch and tap
+          WhatsApp to enquire.
         </p>
 
         {parts.length === 0 ? (
@@ -38,46 +43,72 @@ export default function Shop() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {parts.map((p) => (
-              <div
+              <ShopCard
                 key={p.id}
-                className="bg-white rounded-2xl border shadow-sm p-6 hover:shadow-lg transition"
-              >
-                <div className="text-3xl mb-3">🧩</div>
-                <h2 className="text-xl font-semibold">{p.name}</h2>
-
-                <p className="text-sm text-gray-600 mt-2">
-                  Price: <span className="font-semibold">RM {p.price || "-"}</span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Branch: <span className="font-semibold">{p.branch || "-"}</span>
-                </p>
-
-                <div className="mt-5 flex gap-3">
-                  <a
-                    href={enquiryLink(p)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold text-center hover:bg-green-700 transition"
-                  >
-                    WhatsApp Enquiry
-                  </a>
-
-                  <a
-                    href="/contact"
-                    className="px-4 py-2 rounded-xl border text-sm font-semibold hover:bg-gray-100 transition"
-                  >
-                    Contact
-                  </a>
-                </div>
-
-                <p className="text-xs text-gray-500 mt-4">
-                  Installation is subject to availability at the selected branch.
-                </p>
-              </div>
+                item={p}
+                branches={branches}
+                enquiryLink={enquiryLink}
+              />
             ))}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ShopCard({ item, branches, enquiryLink }) {
+  const [installBranch, setInstallBranch] = useState("");
+
+  return (
+    <div className="bg-white rounded-2xl border shadow-sm p-6 hover:shadow-lg transition">
+      <div className="text-3xl mb-3">🧩</div>
+      <h2 className="text-xl font-semibold">{item.name}</h2>
+
+      <p className="text-sm text-gray-600 mt-2">
+        Price: <span className="font-semibold">RM {item.price || "-"}</span>
+      </p>
+      <p className="text-sm text-gray-600">
+        Suggested branch: <span className="font-semibold">{item.branch || "-"}</span>
+      </p>
+
+      <div className="mt-4">
+        <label className="text-sm font-semibold">Install at (choose branch)</label>
+        <select
+          value={installBranch}
+          onChange={(e) => setInstallBranch(e.target.value)}
+          className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+        >
+          <option value="">Select branch</option>
+          {branches.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mt-5 flex gap-3">
+        <a
+          href={enquiryLink(item, installBranch)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold text-center hover:bg-green-700 transition"
+        >
+          WhatsApp Enquiry
+        </a>
+
+        <a
+          href="/contact"
+          className="px-4 py-2 rounded-xl border text-sm font-semibold hover:bg-gray-100 transition"
+        >
+          Contact
+        </a>
+      </div>
+
+      <p className="text-xs text-gray-500 mt-4">
+        Installation is subject to availability at the selected branch.
+      </p>
     </div>
   );
 }
