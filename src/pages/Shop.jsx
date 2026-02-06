@@ -34,15 +34,30 @@ export default function Shop() {
     []
   );
 
-  function enquiryLink(item, installBranch, preferredDate, preferredTime) {
+  function enquiryLink(
+    item,
+    installOption,
+    installBranch,
+    preferredDate,
+    preferredTime,
+    qty,
+    carModel,
+    plateNo,
+    notes
+  ) {
     const msg =
       `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n` +
       `• Part: ${item.name}\n` +
       `• Price: RM ${item.price || "-"}\n` +
       `• Suggested branch: ${item.branch || "-"}\n` +
+      `• Option: ${installOption}\n` +
+      `• Quantity: ${qty}\n` +
+      `• Car model: ${carModel || "-"}\n` +
+      `• Plate no: ${plateNo || "-"}\n` +
       `• Install at: ${installBranch || "Not selected"}\n` +
       `• Preferred date: ${preferredDate || "Not selected"}\n` +
-      `• Preferred time: ${preferredTime || "Not selected"}\n\n` +
+      `• Preferred time: ${preferredTime || "Not selected"}\n` +
+      `• Notes: ${notes || "-"}\n\n` +
       `Boleh confirm availability & pemasangan?`;
 
     return `${whatsappBase}?text=${encodeURIComponent(msg)}`;
@@ -53,8 +68,8 @@ export default function Shop() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold text-center mb-4">Shop (Draft)</h1>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Items are added from the Admin Dashboard. Choose installation branch
-          and preferred time, then tap WhatsApp to enquire.
+          Select your options and tap WhatsApp to enquire. No online payment yet —
+          we confirm availability and installation via chat.
         </p>
 
         {parts.length === 0 ? (
@@ -83,9 +98,16 @@ export default function Shop() {
 }
 
 function ShopCard({ item, branches, timeSlots, enquiryLink }) {
+  const [installOption, setInstallOption] = useState("Install + Part");
   const [installBranch, setInstallBranch] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
+  const [qty, setQty] = useState(1);
+  const [carModel, setCarModel] = useState("");
+  const [plateNo, setPlateNo] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const showInstallFields = installOption !== "Part Only";
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6 hover:shadow-lg transition">
@@ -100,52 +122,144 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
       </p>
 
       <div className="mt-4 space-y-3">
+        {/* Option */}
         <div>
-          <label className="text-sm font-semibold">Install at (branch)</label>
+          <label className="text-sm font-semibold">Option</label>
           <select
-            value={installBranch}
-            onChange={(e) => setInstallBranch(e.target.value)}
+            value={installOption}
+            onChange={(e) => setInstallOption(e.target.value)}
             className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
           >
-            <option value="">Select branch</option>
-            {branches.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
+            <option>Install + Part</option>
+            <option>Install Only</option>
+            <option>Part Only</option>
           </select>
         </div>
 
+        {/* Quantity */}
         <div>
-          <label className="text-sm font-semibold">Preferred date</label>
+          <label className="text-sm font-semibold">Quantity</label>
+          <div className="mt-1 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              className="w-10 h-10 rounded-xl border hover:bg-gray-100 transition font-bold"
+            >
+              −
+            </button>
+            <input
+              value={qty}
+              onChange={(e) => {
+                const v = parseInt(e.target.value || "1", 10);
+                setQty(Number.isFinite(v) ? Math.max(1, v) : 1);
+              }}
+              className="w-full border rounded-xl px-4 py-3 text-sm text-center"
+              inputMode="numeric"
+            />
+            <button
+              type="button"
+              onClick={() => setQty((q) => q + 1)}
+              className="w-10 h-10 rounded-xl border hover:bg-gray-100 transition font-bold"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        {/* Car model + plate */}
+        <div>
+          <label className="text-sm font-semibold">Car model</label>
           <input
-            type="date"
-            value={preferredDate}
-            onChange={(e) => setPreferredDate(e.target.value)}
+            value={carModel}
+            onChange={(e) => setCarModel(e.target.value)}
             className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+            placeholder="e.g. Myvi 2018 / Vios / Civic"
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold">Preferred time</label>
-          <select
-            value={preferredTime}
-            onChange={(e) => setPreferredTime(e.target.value)}
+          <label className="text-sm font-semibold">Plate number</label>
+          <input
+            value={plateNo}
+            onChange={(e) => setPlateNo(e.target.value)}
             className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-          >
-            <option value="">Select time</option>
-            {timeSlots.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+            placeholder="e.g. ABC1234"
+          />
+        </div>
+
+        {/* Install fields (hidden if Part Only) */}
+        {showInstallFields && (
+          <>
+            <div>
+              <label className="text-sm font-semibold">Install at (branch)</label>
+              <select
+                value={installBranch}
+                onChange={(e) => setInstallBranch(e.target.value)}
+                className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+              >
+                <option value="">Select branch</option>
+                {branches.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold">Preferred date</label>
+              <input
+                type="date"
+                value={preferredDate}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold">Preferred time</label>
+              <select
+                value={preferredTime}
+                onChange={(e) => setPreferredTime(e.target.value)}
+                className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+              >
+                <option value="">Select time</option>
+                {timeSlots.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
+
+        {/* Notes */}
+        <div>
+          <label className="text-sm font-semibold">Notes (optional)</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+            rows={3}
+            placeholder="Any extra info (symptoms, preferred brand, etc.)"
+          />
         </div>
       </div>
 
       <div className="mt-5 flex gap-3">
         <a
-          href={enquiryLink(item, installBranch, preferredDate, preferredTime)}
+          href={enquiryLink(
+            item,
+            installOption,
+            installBranch,
+            preferredDate,
+            preferredTime,
+            qty,
+            carModel,
+            plateNo,
+            notes
+          )}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold text-center hover:bg-green-700 transition"
@@ -162,7 +276,7 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
       </div>
 
       <p className="text-xs text-gray-500 mt-4">
-        Installation is subject to availability at the selected branch & time.
+        We’ll confirm availability & installation after you message us.
       </p>
     </div>
   );
