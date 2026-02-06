@@ -30,6 +30,10 @@ export default function AdminDashboard() {
     []
   );
 
+  const [galleryEnabled, setGalleryEnabled] = useState(
+    localStorage.getItem("gallery_enabled") === "yes"
+  );
+
   function savePromo() {
     localStorage.setItem("promo_title", promoTitle);
     localStorage.setItem("promo_desc", promoDesc);
@@ -58,6 +62,11 @@ export default function AdminDashboard() {
     navigate("/admin/login");
   }
 
+  function toggleGallery(v) {
+    setGalleryEnabled(v);
+    localStorage.setItem("gallery_enabled", v ? "yes" : "no");
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 py-10">
@@ -82,6 +91,67 @@ export default function AdminDashboard() {
             >
               Logout
             </button>
+          </div>
+        </div>
+
+        {/* Quick admin links */}
+        <div className="mt-8 grid md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl border shadow p-6">
+            <h2 className="text-xl font-semibold mb-2">Gallery Control</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Toggle Gallery on/off and check which photos are missing.
+            </p>
+
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => toggleGallery(true)}
+                className={
+                  galleryEnabled
+                    ? "px-4 py-2 rounded-xl bg-green-600 text-white font-semibold"
+                    : "px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 font-semibold"
+                }
+              >
+                ON
+              </button>
+              <button
+                onClick={() => toggleGallery(false)}
+                className={
+                  !galleryEnabled
+                    ? "px-4 py-2 rounded-xl bg-red-600 text-white font-semibold"
+                    : "px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 font-semibold"
+                }
+              >
+                OFF
+              </button>
+
+              <span className="text-sm text-gray-600">
+                Current:{" "}
+                <span className={galleryEnabled ? "text-green-700 font-semibold" : "text-red-700 font-semibold"}>
+                  {galleryEnabled ? "ON" : "OFF"}
+                </span>
+              </span>
+            </div>
+
+            <Link
+              to="/admin/gallery"
+              className="inline-block px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm font-semibold"
+            >
+              Open Gallery Checklist
+            </Link>
+          </div>
+
+          <div className="bg-white rounded-2xl border shadow p-6">
+            <h2 className="text-xl font-semibold mb-2">Quick Tip</h2>
+            <p className="text-sm text-gray-600">
+              Gallery photos should be named exactly:
+            </p>
+            <p className="text-sm font-semibold mt-2">
+              gallery-1.jpg … gallery-6.jpg
+            </p>
+            <p className="text-sm text-gray-600 mt-2">
+              and placed inside:
+            </p>
+            <p className="text-sm font-semibold mt-1">public/gallery</p>
           </div>
         </div>
 
@@ -115,6 +185,10 @@ export default function AdminDashboard() {
           >
             Save Promo
           </button>
+
+          <p className="text-xs text-gray-500 mt-3">
+            Note: This saves only on this browser. Phase 3 will store in a real database.
+          </p>
         </div>
 
         {/* Parts list */}

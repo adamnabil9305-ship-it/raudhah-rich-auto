@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminGallery from "./pages/AdminGallery";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
               <Routes>
                 <Route path="login" element={<AdminLogin />} />
                 <Route path="" element={<AdminDashboard />} />
+                <Route path="gallery" element={<AdminGallery />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
