@@ -1,9 +1,12 @@
 import { useEffect } from "react";
+import { siteContent } from "../data/siteContent";
 
 export default function Home() {
   useEffect(() => {
     document.title = "Raudhah Rich Auto | Trusted Auto Services";
   }, []);
+
+  const { promo } = siteContent;
 
   return (
     <div className="bg-white">
@@ -57,32 +60,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PROMO / ADS SLOT */}
+      {/* PROMO / ADS SLOT (editable from siteContent.js) */}
       <section className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="rounded-2xl border shadow-sm p-6 md:p-8 bg-gradient-to-r from-black to-gray-900 text-white">
             <p className="text-xs uppercase tracking-widest text-gray-300">
-              Promotion / Announcement
+              {promo.badge}
             </p>
-            <h2 className="text-xl md:text-2xl font-bold mt-2">
-              Promo space (update when client confirms)
-            </h2>
-            <p className="text-gray-300 mt-2 max-w-2xl">
-              Example: Free inspection • Seasonal service promo • Special discount • New branch opening
-            </p>
+            <h2 className="text-xl md:text-2xl font-bold mt-2">{promo.title}</h2>
+            <p className="text-gray-300 mt-2 max-w-2xl">{promo.description}</p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <a
-                href="/contact"
+                href={promo.primaryButtonLink}
                 className="inline-block bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition text-center"
               >
-                Ask About Promo
+                {promo.primaryButtonText}
               </a>
               <a
-                href="/services"
+                href={promo.secondaryButtonLink}
                 className="inline-block border border-white px-6 py-3 rounded-xl font-semibold hover:bg-white hover:text-black transition text-center"
               >
-                View Services
+                {promo.secondaryButtonText}
               </a>
             </div>
           </div>
@@ -120,9 +119,7 @@ export default function Home() {
       {/* SMALL CTA */}
       <section className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12 text-center">
-          <h3 className="text-xl md:text-2xl font-bold">
-            Ready to visit us?
-          </h3>
+          <h3 className="text-xl md:text-2xl font-bold">Ready to visit us?</h3>
           <p className="text-gray-600 mt-2">
             View the nearest branch and navigate instantly.
           </p>
