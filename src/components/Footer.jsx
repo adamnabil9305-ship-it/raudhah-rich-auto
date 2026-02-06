@@ -1,4 +1,23 @@
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 export default function Footer() {
+  const [galleryEnabled, setGalleryEnabled] = useState(false);
+
+  useEffect(() => {
+    const v = localStorage.getItem("gallery_enabled") === "yes";
+    setGalleryEnabled(v);
+
+    // If you toggle Gallery in another tab, update badge
+    const onStorage = (e) => {
+      if (e.key === "gallery_enabled") {
+        setGalleryEnabled(e.newValue === "yes");
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   return (
     <footer className="bg-black text-white mt-16">
       <div className="max-w-7xl mx-auto px-6 py-10 grid gap-8 md:grid-cols-3">
@@ -21,9 +40,12 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold mb-3">Head Office</h4>
           <p className="text-sm text-gray-300 leading-relaxed">
-            RAUDHAH RICH GROUP SDN BHD (HQ)<br />
-            No 68 Jalan Pelabur A23/A,<br />
-            Seksyen 23, 40300 Shah Alam,<br />
+            RAUDHAH RICH GROUP SDN BHD (HQ)
+            <br />
+            No 68 Jalan Pelabur A23/A,
+            <br />
+            Seksyen 23, 40300 Shah Alam,
+            <br />
             Selangor.
           </p>
           <a
@@ -62,12 +84,29 @@ export default function Footer() {
             </a>
           </p>
 
-          <div className="mt-5 flex flex-wrap gap-4 text-sm">
-            <a className="hover:text-red-400" href="/services">Services</a>
-            <a className="hover:text-red-400" href="/shop">Shop</a>
-            <a className="hover:text-red-400" href="/gallery">Gallery</a>
-            <a className="hover:text-red-400" href="/locations">Locations</a>
-            <a className="hover:text-red-400" href="/contact">Contact</a>
+          <div className="mt-5 flex flex-wrap gap-4 text-sm items-center">
+            <Link className="hover:text-red-400" to="/services">
+              Services
+            </Link>
+            <Link className="hover:text-red-400" to="/shop">
+              Shop
+            </Link>
+
+            <Link className="hover:text-red-400 inline-flex items-center gap-2" to="/gallery">
+              Gallery
+              {!galleryEnabled && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500 text-black font-bold">
+                  Coming Soon
+                </span>
+              )}
+            </Link>
+
+            <Link className="hover:text-red-400" to="/locations">
+              Locations
+            </Link>
+            <Link className="hover:text-red-400" to="/contact">
+              Contact
+            </Link>
           </div>
 
           <p className="text-xs text-gray-400 mt-5">
