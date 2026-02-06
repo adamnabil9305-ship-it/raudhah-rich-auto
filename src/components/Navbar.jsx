@@ -5,7 +5,6 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
 
-  // Close menu when route changes
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
@@ -31,6 +30,7 @@ export default function Navbar() {
         <div className="hidden md:flex gap-6 text-sm">
           <Link className="hover:text-red-500 transition" to="/">Home</Link>
           <Link className="hover:text-red-500 transition" to="/services">Services</Link>
+          <Link className="hover:text-red-500 transition" to="/shop">Shop</Link>
           <Link className="hover:text-red-500 transition" to="/locations">Locations</Link>
           <Link className="hover:text-red-500 transition" to="/contact">Contact</Link>
         </div>
@@ -42,7 +42,6 @@ export default function Navbar() {
           aria-label="Toggle menu"
           aria-expanded={open}
         >
-          {/* simple hamburger / X */}
           <span className="text-2xl leading-none">{open ? "✕" : "☰"}</span>
         </button>
       </div>
@@ -53,6 +52,7 @@ export default function Navbar() {
           <div className="max-w-7xl mx-auto px-4 py-3 space-y-1 text-sm">
             <Link to="/" className={linkClass("/")}>Home</Link>
             <Link to="/services" className={linkClass("/services")}>Services</Link>
+            <Link to="/shop" className={linkClass("/shop")}>Shop</Link>
             <Link to="/locations" className={linkClass("/locations")}>Locations</Link>
             <Link to="/contact" className={linkClass("/contact")}>Contact</Link>
 

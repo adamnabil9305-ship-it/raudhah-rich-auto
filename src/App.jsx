@@ -5,6 +5,7 @@ import WhatsAppFloat from "./components/WhatsAppFloat";
 
 import Home from "./pages/Home";
 import Services from "./pages/Services";
+import Shop from "./pages/Shop";
 import Locations from "./pages/Locations";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/services" element={<Services />} />
+                  <Route path="/shop" element={<Shop />} />
                   <Route path="/locations" element={<Locations />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
