@@ -19,8 +19,32 @@ export default function Shop() {
     []
   );
 
-  function enquiryLink(item, installBranch) {
-    const msg = `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n• Part: ${item.name}\n• Price: RM ${item.price || "-"}\n• Suggested branch: ${item.branch || "-"}\n• Install at: ${installBranch || "Not selected"}\n\nBoleh confirm availability & pemasangan?`;
+  const timeSlots = useMemo(
+    () => [
+      "9:00 AM",
+      "10:00 AM",
+      "11:00 AM",
+      "12:00 PM",
+      "1:00 PM",
+      "2:00 PM",
+      "3:00 PM",
+      "4:00 PM",
+      "5:00 PM",
+    ],
+    []
+  );
+
+  function enquiryLink(item, installBranch, preferredDate, preferredTime) {
+    const msg =
+      `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n` +
+      `• Part: ${item.name}\n` +
+      `• Price: RM ${item.price || "-"}\n` +
+      `• Suggested branch: ${item.branch || "-"}\n` +
+      `• Install at: ${installBranch || "Not selected"}\n` +
+      `• Preferred date: ${preferredDate || "Not selected"}\n` +
+      `• Preferred time: ${preferredTime || "Not selected"}\n\n` +
+      `Boleh confirm availability & pemasangan?`;
+
     return `${whatsappBase}?text=${encodeURIComponent(msg)}`;
   }
 
@@ -29,8 +53,8 @@ export default function Shop() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold text-center mb-4">Shop (Draft)</h1>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Items are added from the Admin Dashboard. Choose your installation branch and tap
-          WhatsApp to enquire.
+          Items are added from the Admin Dashboard. Choose installation branch
+          and preferred time, then tap WhatsApp to enquire.
         </p>
 
         {parts.length === 0 ? (
@@ -47,6 +71,7 @@ export default function Shop() {
                 key={p.id}
                 item={p}
                 branches={branches}
+                timeSlots={timeSlots}
                 enquiryLink={enquiryLink}
               />
             ))}
@@ -57,8 +82,10 @@ export default function Shop() {
   );
 }
 
-function ShopCard({ item, branches, enquiryLink }) {
+function ShopCard({ item, branches, timeSlots, enquiryLink }) {
   const [installBranch, setInstallBranch] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6 hover:shadow-lg transition">
@@ -72,25 +99,53 @@ function ShopCard({ item, branches, enquiryLink }) {
         Suggested branch: <span className="font-semibold">{item.branch || "-"}</span>
       </p>
 
-      <div className="mt-4">
-        <label className="text-sm font-semibold">Install at (choose branch)</label>
-        <select
-          value={installBranch}
-          onChange={(e) => setInstallBranch(e.target.value)}
-          className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-        >
-          <option value="">Select branch</option>
-          {branches.map((b) => (
-            <option key={b} value={b}>
-              {b}
-            </option>
-          ))}
-        </select>
+      <div className="mt-4 space-y-3">
+        <div>
+          <label className="text-sm font-semibold">Install at (branch)</label>
+          <select
+            value={installBranch}
+            onChange={(e) => setInstallBranch(e.target.value)}
+            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+          >
+            <option value="">Select branch</option>
+            {branches.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold">Preferred date</label>
+          <input
+            type="date"
+            value={preferredDate}
+            onChange={(e) => setPreferredDate(e.target.value)}
+            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold">Preferred time</label>
+          <select
+            value={preferredTime}
+            onChange={(e) => setPreferredTime(e.target.value)}
+            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
+          >
+            <option value="">Select time</option>
+            {timeSlots.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="mt-5 flex gap-3">
         <a
-          href={enquiryLink(item, installBranch)}
+          href={enquiryLink(item, installBranch, preferredDate, preferredTime)}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold text-center hover:bg-green-700 transition"
@@ -107,7 +162,7 @@ function ShopCard({ item, branches, enquiryLink }) {
       </div>
 
       <p className="text-xs text-gray-500 mt-4">
-        Installation is subject to availability at the selected branch.
+        Installation is subject to availability at the selected branch & time.
       </p>
     </div>
   );
