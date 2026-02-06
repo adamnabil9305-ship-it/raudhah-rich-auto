@@ -1,17 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 
+function saveInbox(type, message) {
+  const saved = localStorage.getItem("raudhah_inbox");
+  const arr = saved ? JSON.parse(saved) : [];
+  arr.unshift({
+    id: crypto.randomUUID(),
+    type,
+    message,
+    createdAt: new Date().toISOString(),
+  });
+  localStorage.setItem("raudhah_inbox", JSON.stringify(arr));
+}
+
 export default function Services() {
   useEffect(() => {
     document.title = "Services | Raudhah Rich Auto";
   }, []);
 
   const whatsappBase = useMemo(() => "https://wa.me/60133300069", []);
-
-  const branches = useMemo(
-    () => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"],
-    []
-  );
-
+  const branches = useMemo(() => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"], []);
   const services = useMemo(
     () => [
       "General Servicing (Oil + Filter)",
@@ -25,19 +32,8 @@ export default function Services() {
     ],
     []
   );
-
   const timeSlots = useMemo(
-    () => [
-      "9:00 AM",
-      "10:00 AM",
-      "11:00 AM",
-      "12:00 PM",
-      "1:00 PM",
-      "2:00 PM",
-      "3:00 PM",
-      "4:00 PM",
-      "5:00 PM",
-    ],
+    () => ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"],
     []
   );
 
@@ -49,8 +45,8 @@ export default function Services() {
   const [plateNo, setPlateNo] = useState("");
   const [notes, setNotes] = useState("");
 
-  function whatsappLink() {
-    const msg =
+  function buildMessage() {
+    return (
       `Hi Ahmad Raudhah, saya nak buat service request:\n\n` +
       `• Service: ${selectedService}\n` +
       `• Branch: ${branch || "Not selected"}\n` +
@@ -59,9 +55,14 @@ export default function Services() {
       `• Car model: ${carModel || "-"}\n` +
       `• Plate no: ${plateNo || "-"}\n` +
       `• Notes: ${notes || "-"}\n\n` +
-      `Boleh confirm availability & anggaran harga?`;
+      `Boleh confirm availability & anggaran harga?`
+    );
+  }
 
-    return `${whatsappBase}?text=${encodeURIComponent(msg)}`;
+  function sendWhatsApp() {
+    const message = buildMessage();
+    saveInbox("service", message);
+    window.open(`${whatsappBase}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -69,11 +70,9 @@ export default function Services() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold text-center mb-4">Services</h1>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Browse our services and send a request instantly. We’ll confirm availability,
-          estimated cost, and the best timing via WhatsApp.
+          Browse our services and send a request instantly. We’ll confirm availability and estimated cost via WhatsApp.
         </p>
 
-        {/* Service Cards (simple placeholders for now) */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           <ServiceCard icon="🛠️" title="General Servicing" desc="Oil change, filters, basic checks." />
           <ServiceCard icon="⚙️" title="Repairs & Diagnostics" desc="Troubleshoot issues, repair work." />
@@ -83,11 +82,10 @@ export default function Services() {
           <ServiceCard icon="✅" title="Inspection" desc="Safety check & advice before long trips." />
         </div>
 
-        {/* Service Request Form */}
         <div className="bg-white rounded-2xl border shadow p-6 md:p-8">
           <h2 className="text-2xl font-bold mb-2">Service Request</h2>
           <p className="text-sm text-gray-600 mb-6">
-            Fill in what you can — the WhatsApp message will include everything.
+            Fill what you can — we’ll confirm via WhatsApp. (Phase 2 saves a copy into Admin Inbox for testing.)
           </p>
 
           <div className="grid md:grid-cols-2 gap-5">
@@ -175,20 +173,18 @@ export default function Services() {
                 onChange={(e) => setNotes(e.target.value)}
                 className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
                 rows={4}
-                placeholder="Describe the problem/symptoms, preferred brand, etc."
+                placeholder="Describe symptoms / preferred brand / etc."
               />
             </div>
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <a
-              href={whatsappLink()}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={sendWhatsApp}
               className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold text-center hover:bg-green-700 transition"
             >
               Send Request on WhatsApp
-            </a>
+            </button>
 
             <a
               href="/contact"
@@ -199,7 +195,7 @@ export default function Services() {
           </div>
 
           <p className="text-xs text-gray-500 mt-4">
-            This request does not confirm a booking. We’ll reply to confirm availability & timing.
+            This does not confirm a booking. We’ll reply to confirm timing & price.
           </p>
         </div>
       </div>

@@ -14,11 +14,12 @@ import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminGallery from "./pages/AdminGallery";
+import AdminInbox from "./pages/AdminInbox";
+import AdminSettings from "./pages/AdminSettings";
 
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hide Navbar/Footer on admin pages */}
       <Routes>
         <Route
           path="/admin/*"
@@ -28,11 +29,14 @@ export default function App() {
                 <Route path="login" element={<AdminLogin />} />
                 <Route path="" element={<AdminDashboard />} />
                 <Route path="gallery" element={<AdminGallery />} />
+                <Route path="inbox" element={<AdminInbox />} />
+                <Route path="settings" element={<AdminSettings />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
           }
         />
+
         <Route
           path="*"
           element={

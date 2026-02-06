@@ -1,51 +1,48 @@
 import { useEffect, useMemo, useState } from "react";
 
+function saveInbox(type, message) {
+  const saved = localStorage.getItem("raudhah_inbox");
+  const arr = saved ? JSON.parse(saved) : [];
+  arr.unshift({
+    id: crypto.randomUUID(),
+    type,
+    message,
+    createdAt: new Date().toISOString(),
+  });
+  localStorage.setItem("raudhah_inbox", JSON.stringify(arr));
+}
+
 export default function Shop() {
   useEffect(() => {
     document.title = "Shop | Raudhah Rich Auto";
   }, []);
 
   const [parts, setParts] = useState([]);
-
   useEffect(() => {
     const saved = localStorage.getItem("parts_list");
     setParts(saved ? JSON.parse(saved) : []);
   }, []);
 
   const whatsappBase = useMemo(() => "https://wa.me/60133300069", []);
-
-  const branches = useMemo(
-    () => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"],
-    []
-  );
-
+  const branches = useMemo(() => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"], []);
   const timeSlots = useMemo(
-    () => [
-      "9:00 AM",
-      "10:00 AM",
-      "11:00 AM",
-      "12:00 PM",
-      "1:00 PM",
-      "2:00 PM",
-      "3:00 PM",
-      "4:00 PM",
-      "5:00 PM",
-    ],
+    () => ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"],
     []
   );
 
-  function enquiryLink(
-    item,
-    installOption,
-    installBranch,
-    preferredDate,
-    preferredTime,
-    qty,
-    carModel,
-    plateNo,
-    notes
-  ) {
-    const msg =
+  function buildMessage(item, state) {
+    const {
+      installOption,
+      installBranch,
+      preferredDate,
+      preferredTime,
+      qty,
+      carModel,
+      plateNo,
+      notes,
+    } = state;
+
+    return (
       `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n` +
       `• Part: ${item.name}\n` +
       `• Price: RM ${item.price || "-"}\n` +
@@ -58,9 +55,12 @@ export default function Shop() {
       `• Preferred date: ${preferredDate || "Not selected"}\n` +
       `• Preferred time: ${preferredTime || "Not selected"}\n` +
       `• Notes: ${notes || "-"}\n\n` +
-      `Boleh confirm availability & pemasangan?`;
+      `Boleh confirm availability & pemasangan?`
+    );
+  }
 
-    return `${whatsappBase}?text=${encodeURIComponent(msg)}`;
+  function waLink(message) {
+    return `${whatsappBase}?text=${encodeURIComponent(message)}`;
   }
 
   return (
@@ -68,8 +68,7 @@ export default function Shop() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold text-center mb-4">Shop (Draft)</h1>
         <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Select your options and tap WhatsApp to enquire. No online payment yet —
-          we confirm availability and installation via chat.
+          Choose options and send enquiry via WhatsApp. (No online payment yet.)
         </p>
 
         {parts.length === 0 ? (
@@ -87,7 +86,8 @@ export default function Shop() {
                 item={p}
                 branches={branches}
                 timeSlots={timeSlots}
-                enquiryLink={enquiryLink}
+                buildMessage={buildMessage}
+                waLink={waLink}
               />
             ))}
           </div>
@@ -97,7 +97,7 @@ export default function Shop() {
   );
 }
 
-function ShopCard({ item, branches, timeSlots, enquiryLink }) {
+function ShopCard({ item, branches, timeSlots, buildMessage, waLink }) {
   const [installOption, setInstallOption] = useState("Install + Part");
   const [installBranch, setInstallBranch] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
@@ -108,6 +108,22 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
   const [notes, setNotes] = useState("");
 
   const showInstallFields = installOption !== "Part Only";
+
+  function sendWhatsApp() {
+    const message = buildMessage(item, {
+      installOption,
+      installBranch,
+      preferredDate,
+      preferredTime,
+      qty,
+      carModel,
+      plateNo,
+      notes,
+    });
+
+    saveInbox("shop", message);
+    window.open(waLink(message), "_blank", "noopener,noreferrer");
+  }
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-6 hover:shadow-lg transition">
@@ -122,7 +138,6 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
       </p>
 
       <div className="mt-4 space-y-3">
-        {/* Option */}
         <div>
           <label className="text-sm font-semibold">Option</label>
           <select
@@ -136,7 +151,6 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
           </select>
         </div>
 
-        {/* Quantity */}
         <div>
           <label className="text-sm font-semibold">Quantity</label>
           <div className="mt-1 flex items-center gap-2">
@@ -166,7 +180,6 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
           </div>
         </div>
 
-        {/* Car model + plate */}
         <div>
           <label className="text-sm font-semibold">Car model</label>
           <input
@@ -187,7 +200,6 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
           />
         </div>
 
-        {/* Install fields (hidden if Part Only) */}
         {showInstallFields && (
           <>
             <div>
@@ -234,7 +246,6 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
           </>
         )}
 
-        {/* Notes */}
         <div>
           <label className="text-sm font-semibold">Notes (optional)</label>
           <textarea
@@ -242,30 +253,18 @@ function ShopCard({ item, branches, timeSlots, enquiryLink }) {
             onChange={(e) => setNotes(e.target.value)}
             className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
             rows={3}
-            placeholder="Any extra info (symptoms, preferred brand, etc.)"
+            placeholder="Symptoms / preferred brand / extra info"
           />
         </div>
       </div>
 
       <div className="mt-5 flex gap-3">
-        <a
-          href={enquiryLink(
-            item,
-            installOption,
-            installBranch,
-            preferredDate,
-            preferredTime,
-            qty,
-            carModel,
-            plateNo,
-            notes
-          )}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={sendWhatsApp}
           className="flex-1 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold text-center hover:bg-green-700 transition"
         >
           WhatsApp Enquiry
-        </a>
+        </button>
 
         <a
           href="/contact"

@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+
+function getCreds() {
+  const saved = localStorage.getItem("raudhah_admin_creds");
+  if (saved) return JSON.parse(saved);
+
+  // Default creds (Phase 2 only)
+  return { username: "admin", password: "raudhah123" };
+}
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -17,12 +25,8 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
 
-    // TEMP (Phase 2): simple demo credentials
-    // Change later / replace with real auth (Supabase / DB)
-    const OK_USER = "admin";
-    const OK_PASS = "raudhah123";
-
-    if (user === OK_USER && pass === OK_PASS) {
+    const creds = getCreds();
+    if (user === creds.username && pass === creds.password) {
       localStorage.setItem("raudhah_admin_authed", "yes");
       navigate("/admin");
       return;
@@ -35,9 +39,11 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
       <div className="w-full max-w-md bg-white rounded-2xl border shadow p-6">
         <h1 className="text-2xl font-bold mb-2">Admin Login</h1>
-        <p className="text-sm text-gray-600 mb-6">
-          For Raudhah Rich Auto internal use only.
-        </p>
+
+        <div className="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+          Phase 2 note: Admin is <b>not fully secure</b> yet (localStorage demo auth).
+          Avoid sharing <b>/admin</b> links publicly.
+        </div>
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -76,9 +82,12 @@ export default function AdminLogin() {
             Log In
           </button>
 
-          <p className="text-xs text-gray-500 text-center">
-            Phase 2 demo login (we’ll replace with real auth later).
-          </p>
+          <div className="text-xs text-gray-600 flex items-center justify-between">
+            <span>Default: admin / raudhah123</span>
+            <Link className="underline" to="/admin/settings">
+              Change admin password
+            </Link>
+          </div>
         </form>
       </div>
     </div>
