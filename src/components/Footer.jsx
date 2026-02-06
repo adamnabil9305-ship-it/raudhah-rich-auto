@@ -62,8 +62,10 @@ export default function Footer() {
             </a>
           </p>
 
-          <div className="mt-5 flex gap-4 text-sm">
+          <div className="mt-5 flex flex-wrap gap-4 text-sm">
             <a className="hover:text-red-400" href="/services">Services</a>
+            <a className="hover:text-red-400" href="/shop">Shop</a>
+            <a className="hover:text-red-400" href="/gallery">Gallery</a>
             <a className="hover:text-red-400" href="/locations">Locations</a>
             <a className="hover:text-red-400" href="/contact">Contact</a>
           </div>
