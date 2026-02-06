@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { siteContent } from "../data/siteContent";
 
 export default function Home() {
@@ -6,7 +6,29 @@ export default function Home() {
     document.title = "Raudhah Rich Auto | Trusted Auto Services";
   }, []);
 
-  const { promo } = siteContent;
+  // Admin-Lite: promo overrides stored in this browser
+  const [promoTitle, setPromoTitle] = useState("");
+  const [promoDesc, setPromoDesc] = useState("");
+
+  useEffect(() => {
+    const t = localStorage.getItem("promo_title") || "";
+    const d = localStorage.getItem("promo_desc") || "";
+    setPromoTitle(t);
+    setPromoDesc(d);
+  }, []);
+
+  const promo = useMemo(() => {
+    const fallback = siteContent.promo;
+    return {
+      badge: fallback.badge,
+      title: promoTitle.trim() ? promoTitle : fallback.title,
+      description: promoDesc.trim() ? promoDesc : fallback.description,
+      primaryButtonText: fallback.primaryButtonText,
+      primaryButtonLink: fallback.primaryButtonLink,
+      secondaryButtonText: fallback.secondaryButtonText,
+      secondaryButtonLink: fallback.secondaryButtonLink,
+    };
+  }, [promoTitle, promoDesc]);
 
   return (
     <div className="bg-white">
@@ -60,7 +82,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PROMO / ADS SLOT (editable from siteContent.js) */}
+      {/* PROMO (reads admin localStorage) */}
       <section className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="rounded-2xl border shadow-sm p-6 md:p-8 bg-gradient-to-r from-black to-gray-900 text-white">
@@ -84,6 +106,10 @@ export default function Home() {
                 {promo.secondaryButtonText}
               </a>
             </div>
+
+            <p className="text-xs text-gray-400 mt-4">
+              Admin-Lite: promo edits apply on this browser only (Phase 3 DB will make it global).
+            </p>
           </div>
         </div>
       </section>
@@ -110,13 +136,13 @@ export default function Home() {
             />
             <InfoBox
               title="Client-ready Updates"
-              desc="Promos, gallery, and future admin features can be added when content is ready."
+              desc="Gallery photos and detailed services can be added when content is ready."
             />
           </div>
         </div>
       </section>
 
-      {/* SMALL CTA */}
+      {/* CTA */}
       <section className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-12 text-center">
           <h3 className="text-xl md:text-2xl font-bold">Ready to visit us?</h3>
