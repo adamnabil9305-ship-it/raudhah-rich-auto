@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 
-function saveInbox(type, message) {
-  const saved = localStorage.getItem("raudhah_inbox");
-  const arr = saved ? JSON.parse(saved) : [];
-  arr.unshift({
-    id: crypto.randomUUID(),
-    type,
-    message,
-    createdAt: new Date().toISOString(),
-  });
-  localStorage.setItem("raudhah_inbox", JSON.stringify(arr));
+const WHATSAPP_NUMBER = "60133300069"; // international format without +
+
+function waLink(message) {
+  const text = encodeURIComponent(message);
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+}
+
+function saveInboxItem(item) {
+  const key = "raudhah_inbox";
+  const current = localStorage.getItem(key);
+  const list = current ? JSON.parse(current) : [];
+  list.unshift(item);
+  localStorage.setItem(key, JSON.stringify(list));
 }
 
 export default function Shop() {
@@ -17,266 +20,207 @@ export default function Shop() {
     document.title = "Shop | Raudhah Rich Auto";
   }, []);
 
-  const [parts, setParts] = useState([]);
-  useEffect(() => {
-    const saved = localStorage.getItem("parts_list");
-    setParts(saved ? JSON.parse(saved) : []);
-  }, []);
-
-  const whatsappBase = useMemo(() => "https://wa.me/60133300069", []);
-  const branches = useMemo(() => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"], []);
-  const timeSlots = useMemo(
-    () => ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"],
+  const branches = useMemo(
+    () => [
+      "Seksyen 23, Shah Alam",
+      "Seksyen 15, Shah Alam",
+      "U12, Shah Alam",
+      "Batu Caves, KL",
+    ],
     []
   );
 
-  function buildMessage(item, state) {
-    const {
-      installOption,
-      installBranch,
-      preferredDate,
-      preferredTime,
-      qty,
-      carModel,
-      plateNo,
-      notes,
-    } = state;
+  // Load admin-created parts first (from dashboard)
+  const adminParts = useMemo(() => {
+    try {
+      const saved = localStorage.getItem("parts_list");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  }, []);
 
-    return (
-      `Hi Ahmad Raudhah, saya nak tanya pasal part ini:\n\n` +
-      `• Part: ${item.name}\n` +
-      `• Price: RM ${item.price || "-"}\n` +
-      `• Suggested branch: ${item.branch || "-"}\n` +
-      `• Option: ${installOption}\n` +
-      `• Quantity: ${qty}\n` +
-      `• Car model: ${carModel || "-"}\n` +
-      `• Plate no: ${plateNo || "-"}\n` +
-      `• Install at: ${installBranch || "Not selected"}\n` +
-      `• Preferred date: ${preferredDate || "Not selected"}\n` +
-      `• Preferred time: ${preferredTime || "Not selected"}\n` +
-      `• Notes: ${notes || "-"}\n\n` +
-      `Boleh confirm availability & pemasangan?`
-    );
-  }
+  // If adminParts empty, show a few placeholders
+  const fallback = [
+    { id: "oil", name: "Engine Oil (4L)", price: "120", branch: "Any branch" },
+    { id: "battery", name: "Car Battery", price: "280", branch: "Any branch" },
+    { id: "brake", name: "Brake Pads", price: "180", branch: "Any branch" },
+  ];
 
-  function waLink(message) {
-    return `${whatsappBase}?text=${encodeURIComponent(message)}`;
-  }
+  const products = adminParts.length ? adminParts : fallback;
 
-  return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <h1 className="text-4xl font-bold text-center mb-4">Shop (Draft)</h1>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Choose options and send enquiry via WhatsApp. (No online payment yet.)
-        </p>
+  const [selectedId, setSelectedId] = useState(products[0]?.id || "");
+  const selected = products.find((p) => p.id === selectedId) || products[0];
 
-        {parts.length === 0 ? (
-          <div className="bg-white border rounded-2xl shadow-sm p-8 text-center">
-            <p className="text-gray-700 font-semibold">No parts available yet.</p>
-            <p className="text-sm text-gray-600 mt-2">
-              Add items in <span className="font-semibold">Admin → Parts Catalog</span>.
-            </p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {parts.map((p) => (
-              <ShopCard
-                key={p.id}
-                item={p}
-                branches={branches}
-                timeSlots={timeSlots}
-                buildMessage={buildMessage}
-                waLink={waLink}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ShopCard({ item, branches, timeSlots, buildMessage, waLink }) {
-  const [installOption, setInstallOption] = useState("Install + Part");
-  const [installBranch, setInstallBranch] = useState("");
-  const [preferredDate, setPreferredDate] = useState("");
-  const [preferredTime, setPreferredTime] = useState("");
-  const [qty, setQty] = useState(1);
-  const [carModel, setCarModel] = useState("");
-  const [plateNo, setPlateNo] = useState("");
+  const [branch, setBranch] = useState(branches[0]);
+  const [install, setInstall] = useState(true);
   const [notes, setNotes] = useState("");
-
-  const showInstallFields = installOption !== "Part Only";
+  const [name, setName] = useState("");
 
   function sendWhatsApp() {
-    const message = buildMessage(item, {
-      installOption,
-      installBranch,
-      preferredDate,
-      preferredTime,
-      qty,
-      carModel,
-      plateNo,
-      notes,
+    if (!selected) return;
+
+    const lines = [
+      "Hi Raudhah Rich Auto 👋",
+      "",
+      "I want to buy a car part:",
+      `• Item: ${selected.name}`,
+      `• Price (est.): RM ${selected.price || "-"}`,
+      `• Branch: ${branch}`,
+      `• Installation: ${install ? "Yes (assemble at workshop)" : "No (part only)"}`,
+      name.trim() ? `• Customer name: ${name.trim()}` : null,
+      notes.trim() ? `• Notes: ${notes.trim()}` : null,
+      "",
+      "Please confirm availability and total price. Thank you!",
+    ].filter(Boolean);
+
+    const message = lines.join("\n");
+
+    // Save to Admin Inbox (Phase 2 local)
+    saveInboxItem({
+      id: crypto.randomUUID(),
+      type: "shop",
+      createdAt: new Date().toISOString(),
+      message,
+      meta: {
+        item: selected.name,
+        branch,
+        install,
+      },
     });
 
-    saveInbox("shop", message);
-    window.open(waLink(message), "_blank", "noopener,noreferrer");
+    window.open(waLink(message), "_blank");
   }
 
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6 hover:shadow-lg transition">
-      <div className="text-3xl mb-3">🧩</div>
-      <h2 className="text-xl font-semibold">{item.name}</h2>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <h1 className="text-4xl font-bold">Shop</h1>
+        <p className="text-gray-600 mt-2">
+          Browse parts (Phase 2 draft). Choose a branch and WhatsApp us to confirm stock & installation.
+        </p>
 
-      <p className="text-sm text-gray-600 mt-2">
-        Price: <span className="font-semibold">RM {item.price || "-"}</span>
-      </p>
-      <p className="text-sm text-gray-600">
-        Suggested branch: <span className="font-semibold">{item.branch || "-"}</span>
-      </p>
+        <div className="mt-8 grid lg:grid-cols-2 gap-8">
+          {/* Left: Product list */}
+          <div className="bg-white rounded-2xl border shadow p-6">
+            <h2 className="text-xl font-semibold">Available Items</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              If this list is empty, add parts from <span className="font-semibold">Admin Dashboard → Parts Catalog</span>.
+            </p>
 
-      <div className="mt-4 space-y-3">
-        <div>
-          <label className="text-sm font-semibold">Option</label>
-          <select
-            value={installOption}
-            onChange={(e) => setInstallOption(e.target.value)}
-            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-          >
-            <option>Install + Part</option>
-            <option>Install Only</option>
-            <option>Part Only</option>
-          </select>
-        </div>
+            <div className="mt-4 space-y-3">
+              {products.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedId(p.id)}
+                  className={
+                    "w-full text-left border rounded-xl p-4 transition " +
+                    (p.id === selectedId
+                      ? "border-black bg-gray-50"
+                      : "hover:bg-gray-50")
+                  }
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-semibold">{p.name}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        RM {p.price || "-"}{" "}
+                        <span className="mx-2">•</span>{" "}
+                        {p.branch || "Any branch"}
+                      </p>
+                    </div>
+                    <span className="text-xs px-3 py-1 rounded-full bg-gray-100 border">
+                      Select
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
 
-        <div>
-          <label className="text-sm font-semibold">Quantity</label>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="w-10 h-10 rounded-xl border hover:bg-gray-100 transition font-bold"
-            >
-              −
-            </button>
-            <input
-              value={qty}
-              onChange={(e) => {
-                const v = parseInt(e.target.value || "1", 10);
-                setQty(Number.isFinite(v) ? Math.max(1, v) : 1);
-              }}
-              className="w-full border rounded-xl px-4 py-3 text-sm text-center"
-              inputMode="numeric"
-            />
-            <button
-              type="button"
-              onClick={() => setQty((q) => q + 1)}
-              className="w-10 h-10 rounded-xl border hover:bg-gray-100 transition font-bold"
-            >
-              +
-            </button>
+          {/* Right: Checkout/WhatsApp */}
+          <div className="bg-white rounded-2xl border shadow p-6">
+            <h2 className="text-xl font-semibold">Request / Confirm via WhatsApp</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              This sends a formatted message to WhatsApp + saves it into Admin Inbox.
+            </p>
+
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="text-sm font-semibold">Selected item</label>
+                <div className="mt-1 border rounded-xl px-4 py-3 bg-gray-50">
+                  <p className="font-semibold">{selected?.name || "-"}</p>
+                  <p className="text-sm text-gray-600">RM {selected?.price || "-"}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold">Choose branch</label>
+                <select
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-4 py-3"
+                >
+                  {branches.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Tip: customer can choose nearest branch (we’ll upgrade later with location auto-suggest).
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input
+                  id="install"
+                  type="checkbox"
+                  checked={install}
+                  onChange={(e) => setInstall(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                <label htmlFor="install" className="text-sm font-semibold">
+                  Assemble/install at workshop
+                </label>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-semibold">Customer name (optional)</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1 w-full border rounded-xl px-4 py-3"
+                    placeholder="e.g. Adam"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold">Notes (optional)</label>
+                  <input
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="mt-1 w-full border rounded-xl px-4 py-3"
+                    placeholder="e.g. My car model is..."
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={sendWhatsApp}
+                className="w-full mt-2 bg-green-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+              >
+                Send to WhatsApp
+              </button>
+
+              <p className="text-xs text-gray-500">
+                Phase 3: this becomes real checkout + stock tracking database.
+              </p>
+            </div>
           </div>
         </div>
-
-        <div>
-          <label className="text-sm font-semibold">Car model</label>
-          <input
-            value={carModel}
-            onChange={(e) => setCarModel(e.target.value)}
-            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-            placeholder="e.g. Myvi 2018 / Vios / Civic"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-semibold">Plate number</label>
-          <input
-            value={plateNo}
-            onChange={(e) => setPlateNo(e.target.value)}
-            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-            placeholder="e.g. ABC1234"
-          />
-        </div>
-
-        {showInstallFields && (
-          <>
-            <div>
-              <label className="text-sm font-semibold">Install at (branch)</label>
-              <select
-                value={installBranch}
-                onChange={(e) => setInstallBranch(e.target.value)}
-                className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-              >
-                <option value="">Select branch</option>
-                {branches.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold">Preferred date</label>
-              <input
-                type="date"
-                value={preferredDate}
-                onChange={(e) => setPreferredDate(e.target.value)}
-                className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold">Preferred time</label>
-              <select
-                value={preferredTime}
-                onChange={(e) => setPreferredTime(e.target.value)}
-                className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-              >
-                <option value="">Select time</option>
-                {timeSlots.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
-        )}
-
-        <div>
-          <label className="text-sm font-semibold">Notes (optional)</label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="mt-1 w-full border rounded-xl px-4 py-3 text-sm"
-            rows={3}
-            placeholder="Symptoms / preferred brand / extra info"
-          />
-        </div>
       </div>
-
-      <div className="mt-5 flex gap-3">
-        <button
-          onClick={sendWhatsApp}
-          className="flex-1 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold text-center hover:bg-green-700 transition"
-        >
-          WhatsApp Enquiry
-        </button>
-
-        <a
-          href="/contact"
-          className="px-4 py-2 rounded-xl border text-sm font-semibold hover:bg-gray-100 transition"
-        >
-          Contact
-        </a>
-      </div>
-
-      <p className="text-xs text-gray-500 mt-4">
-        We’ll confirm availability & installation after you message us.
-      </p>
     </div>
   );
 }
