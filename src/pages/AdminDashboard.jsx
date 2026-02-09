@@ -69,39 +69,58 @@ export default function AdminDashboard() {
               Phase 2 (Admin-Lite): changes save in this browser only (localStorage).
             </p>
           </div>
+        </div>
 
-          <div className="flex gap-3">
+        {/* Phase Progress */}
+        <div className="mt-8 bg-white rounded-2xl border shadow p-6">
+          <h2 className="text-xl font-semibold">Phase Progress</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            What’s done vs what’s pending (so you don’t miss anything).
+          </p>
+
+          <div className="mt-4 grid md:grid-cols-2 gap-4 text-sm">
+            <div className="border rounded-xl p-4">
+              <p className="font-semibold mb-2">✅ Done (Phase 2)</p>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                <li>Admin mode top bar + settings</li>
+                <li>Shop enquiry → WhatsApp + Admin Inbox</li>
+                <li>Services request → WhatsApp + Admin Inbox</li>
+                <li>Nearest branch helper (Locations)</li>
+                <li>Gallery checklist (missing files detection)</li>
+              </ul>
+            </div>
+
+            <div className="border rounded-xl p-4">
+              <p className="font-semibold mb-2">⏳ Next (Phase 3)</p>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                <li>Real database (inventory + enquiries)</li>
+                <li>Real admin auth (secure login)</li>
+                <li>Appointment booking calendar</li>
+                <li>Photo upload flow (admin upload)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              to="/admin/inbox"
+              className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm font-semibold"
+            >
+              Open Inbox
+            </Link>
             <Link
               to="/admin/gallery"
               className="px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 transition text-sm font-semibold"
             >
               Gallery Checklist
             </Link>
+            <Link
+              to="/admin/settings"
+              className="px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 transition text-sm font-semibold"
+            >
+              Admin Settings
+            </Link>
           </div>
-        </div>
-
-        {/* Quick links */}
-        <div className="mt-8 grid md:grid-cols-3 gap-6">
-          <Link to="/admin/inbox" className="bg-white rounded-2xl border shadow p-6 hover:shadow-md transition">
-            <h2 className="text-xl font-semibold">Inbox</h2>
-            <p className="text-sm text-gray-600 mt-2">
-              View saved Shop/Service enquiries (Phase 2 testing).
-            </p>
-          </Link>
-
-          <Link to="/admin/gallery" className="bg-white rounded-2xl border shadow p-6 hover:shadow-md transition">
-            <h2 className="text-xl font-semibold">Gallery Checklist</h2>
-            <p className="text-sm text-gray-600 mt-2">
-              Check missing gallery files + toggle Gallery.
-            </p>
-          </Link>
-
-          <Link to="/admin/settings" className="bg-white rounded-2xl border shadow p-6 hover:shadow-md transition">
-            <h2 className="text-xl font-semibold">Settings</h2>
-            <p className="text-sm text-gray-600 mt-2">
-              Change admin username/password (Phase 2 local).
-            </p>
-          </Link>
         </div>
 
         {/* Gallery toggle */}
@@ -132,12 +151,6 @@ export default function AdminDashboard() {
             >
               OFF
             </button>
-            <span className="text-sm text-gray-600 ml-2">
-              Current:{" "}
-              <span className={galleryEnabled ? "text-green-700 font-semibold" : "text-red-700 font-semibold"}>
-                {galleryEnabled ? "ON" : "OFF"}
-              </span>
-            </span>
           </div>
         </div>
 
@@ -224,9 +237,7 @@ export default function AdminDashboard() {
 
           <div className="mt-6 border-t pt-4">
             {parts.length === 0 ? (
-              <p className="text-sm text-gray-600">
-                No parts added yet. Add a few to test Shop enquiries.
-              </p>
+              <p className="text-sm text-gray-600">No parts added yet.</p>
             ) : (
               <div className="space-y-3">
                 {parts.map((p) => (

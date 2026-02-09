@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import SectionHeader from "../components/SectionHeader";
 
-const WHATSAPP_NUMBER = "60133300069"; // international format without +
+const WHATSAPP_NUMBER = "60133300069";
 
 function waLink(message) {
-  const text = encodeURIComponent(message);
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
 function saveInboxItem(item) {
@@ -21,16 +21,10 @@ export default function Shop() {
   }, []);
 
   const branches = useMemo(
-    () => [
-      "Seksyen 23, Shah Alam",
-      "Seksyen 15, Shah Alam",
-      "U12, Shah Alam",
-      "Batu Caves, KL",
-    ],
+    () => ["Seksyen 23, Shah Alam", "Seksyen 15, Shah Alam", "U12, Shah Alam", "Batu Caves, KL"],
     []
   );
 
-  // Load admin-created parts first (from dashboard)
   const adminParts = useMemo(() => {
     try {
       const saved = localStorage.getItem("parts_list");
@@ -40,7 +34,6 @@ export default function Shop() {
     }
   }, []);
 
-  // If adminParts empty, show a few placeholders
   const fallback = [
     { id: "oil", name: "Engine Oil (4L)", price: "120", branch: "Any branch" },
     { id: "battery", name: "Car Battery", price: "280", branch: "Any branch" },
@@ -76,17 +69,12 @@ export default function Shop() {
 
     const message = lines.join("\n");
 
-    // Save to Admin Inbox (Phase 2 local)
     saveInboxItem({
       id: crypto.randomUUID(),
       type: "shop",
       createdAt: new Date().toISOString(),
       message,
-      meta: {
-        item: selected.name,
-        branch,
-        install,
-      },
+      meta: { item: selected.name, branch, install },
     });
 
     window.open(waLink(message), "_blank");
@@ -95,17 +83,16 @@ export default function Shop() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="text-4xl font-bold">Shop</h1>
-        <p className="text-gray-600 mt-2">
-          Browse parts (Phase 2 draft). Choose a branch and WhatsApp us to confirm stock & installation.
-        </p>
+        <SectionHeader
+          title="Shop"
+          subtitle="Choose a part, select a branch, and send an enquiry via WhatsApp. (Phase 2 draft)"
+        />
 
-        <div className="mt-8 grid lg:grid-cols-2 gap-8">
-          {/* Left: Product list */}
+        <div className="grid lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-2xl border shadow p-6">
             <h2 className="text-xl font-semibold">Available Items</h2>
             <p className="text-sm text-gray-600 mt-1">
-              If this list is empty, add parts from <span className="font-semibold">Admin Dashboard → Parts Catalog</span>.
+              Add items from <span className="font-semibold">Admin → Parts Catalog</span>.
             </p>
 
             <div className="mt-4 space-y-3">
@@ -115,34 +102,27 @@ export default function Shop() {
                   onClick={() => setSelectedId(p.id)}
                   className={
                     "w-full text-left border rounded-xl p-4 transition " +
-                    (p.id === selectedId
-                      ? "border-black bg-gray-50"
-                      : "hover:bg-gray-50")
+                    (p.id === selectedId ? "border-black bg-gray-50" : "hover:bg-gray-50")
                   }
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="font-semibold">{p.name}</p>
                       <p className="text-sm text-gray-600 mt-1">
-                        RM {p.price || "-"}{" "}
-                        <span className="mx-2">•</span>{" "}
-                        {p.branch || "Any branch"}
+                        RM {p.price || "-"} <span className="mx-2">•</span> {p.branch || "Any branch"}
                       </p>
                     </div>
-                    <span className="text-xs px-3 py-1 rounded-full bg-gray-100 border">
-                      Select
-                    </span>
+                    <span className="text-xs px-3 py-1 rounded-full bg-gray-100 border">Select</span>
                   </div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Right: Checkout/WhatsApp */}
           <div className="bg-white rounded-2xl border shadow p-6">
-            <h2 className="text-xl font-semibold">Request / Confirm via WhatsApp</h2>
+            <h2 className="text-xl font-semibold">Confirm via WhatsApp</h2>
             <p className="text-sm text-gray-600 mt-1">
-              This sends a formatted message to WhatsApp + saves it into Admin Inbox.
+              This sends a formatted message + saves into <span className="font-semibold">Admin Inbox</span>.
             </p>
 
             <div className="mt-5 space-y-4">
@@ -167,9 +147,6 @@ export default function Shop() {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  Tip: customer can choose nearest branch (we’ll upgrade later with location auto-suggest).
-                </p>
               </div>
 
               <div className="flex items-center gap-3">
@@ -195,7 +172,6 @@ export default function Shop() {
                     placeholder="e.g. Adam"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm font-semibold">Notes (optional)</label>
                   <input
@@ -209,13 +185,13 @@ export default function Shop() {
 
               <button
                 onClick={sendWhatsApp}
-                className="w-full mt-2 bg-green-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+                className="w-full bg-green-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
               >
                 Send to WhatsApp
               </button>
 
               <p className="text-xs text-gray-500">
-                Phase 3: this becomes real checkout + stock tracking database.
+                Phase 3: real checkout + stock tracking database.
               </p>
             </div>
           </div>

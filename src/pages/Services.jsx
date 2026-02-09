@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import SectionHeader from "../components/SectionHeader";
 
-const WHATSAPP_NUMBER = "60133300069"; // international format without +
+const WHATSAPP_NUMBER = "60133300069";
 
 function waLink(message) {
-  const text = encodeURIComponent(message);
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
 function saveInboxItem(item) {
@@ -25,20 +25,15 @@ export default function Services() {
       { title: "General Servicing", desc: "Oil change, inspection, and regular maintenance." },
       { title: "Vehicle Repairs", desc: "Engine, brake, suspension, and diagnostics." },
       { title: "Inspection", desc: "Safety checks and pre-trip inspections." },
-      { title: "Aircond Service", desc: "Cooling performance checks, gas top-up, and leak inspection." },
-      { title: "Brake Service", desc: "Brake pads, discs, fluid checks, and brake noise diagnosis." },
-      { title: "Tyre & Alignment", desc: "Tyre changes, balancing, alignment, and vibration checks." },
+      { title: "Aircond Service", desc: "Cooling checks, gas top-up, and leak inspection." },
+      { title: "Brake Service", desc: "Brake pads, discs, fluid checks, and noise diagnosis." },
+      { title: "Tyre & Alignment", desc: "Tyre changes, balancing, alignment, vibration checks." },
     ],
     []
   );
 
   const branches = useMemo(
-    () => [
-      "Seksyen 23, Shah Alam",
-      "Seksyen 15, Shah Alam",
-      "U12, Shah Alam",
-      "Batu Caves, KL",
-    ],
+    () => ["Seksyen 23, Shah Alam", "Seksyen 15, Shah Alam", "U12, Shah Alam", "Batu Caves, KL"],
     []
   );
 
@@ -71,11 +66,7 @@ export default function Services() {
       type: "service",
       createdAt: new Date().toISOString(),
       message,
-      meta: {
-        service: selectedService,
-        branch,
-        plate: carPlate.trim(),
-      },
+      meta: { service: selectedService, branch, plate: carPlate.trim() },
     });
 
     window.open(waLink(message), "_blank");
@@ -84,13 +75,12 @@ export default function Services() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="text-4xl font-bold">Services</h1>
-        <p className="text-gray-600 mt-2">
-          Choose a service and send your request via WhatsApp. (Saved into Admin Inbox for tracking.)
-        </p>
+        <SectionHeader
+          title="Services"
+          subtitle="Choose a service and send your request via WhatsApp. (Saved into Admin Inbox)"
+        />
 
-        <div className="mt-8 grid lg:grid-cols-2 gap-8">
-          {/* Service cards */}
+        <div className="grid lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-2xl border shadow p-6">
             <h2 className="text-xl font-semibold">Our Services</h2>
             <p className="text-sm text-gray-600 mt-1">Pick one to fill the request form.</p>
@@ -112,11 +102,10 @@ export default function Services() {
             </div>
           </div>
 
-          {/* Request form */}
           <div className="bg-white rounded-2xl border shadow p-6">
             <h2 className="text-xl font-semibold">Request a Service</h2>
             <p className="text-sm text-gray-600 mt-1">
-              This sends a formatted WhatsApp message + saves into Admin Inbox.
+              WhatsApp message is formatted automatically + saved into Admin Inbox.
             </p>
 
             <div className="mt-5 space-y-4">
@@ -186,7 +175,7 @@ export default function Services() {
 
               <button
                 onClick={sendWhatsApp}
-                className="w-full mt-2 bg-green-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+                className="w-full bg-green-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-green-700 transition"
               >
                 Send Service Request to WhatsApp
               </button>
