@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import AdminTopbar from "../components/AdminTopbar";
 
 export default function AdminInbox() {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ export default function AdminInbox() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminTopbar subtitle="Inbox" />
+
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -39,20 +42,12 @@ export default function AdminInbox() {
             </p>
           </div>
 
-          <div className="flex gap-3">
-            <Link
-              to="/admin"
-              className="px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 transition text-sm font-semibold"
-            >
-              Back to Admin
-            </Link>
-            <button
-              onClick={clearAll}
-              className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm font-semibold"
-            >
-              Clear All
-            </button>
-          </div>
+          <button
+            onClick={clearAll}
+            className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm font-semibold"
+          >
+            Clear All
+          </button>
         </div>
 
         <div className="mt-8 bg-white rounded-2xl border shadow p-6">

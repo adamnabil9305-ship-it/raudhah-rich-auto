@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import AdminTopbar from "../components/AdminTopbar";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const [promoTitle, setPromoTitle] = useState(
-    localStorage.getItem("promo_title") || "Promo space (update when client confirms)"
+    localStorage.getItem("promo_title") || "Promo slot (update when client confirms)"
   );
   const [promoDesc, setPromoDesc] = useState(
     localStorage.getItem("promo_desc") ||
@@ -51,11 +52,6 @@ export default function AdminDashboard() {
     localStorage.setItem("parts_list", JSON.stringify(updated));
   }
 
-  function logout() {
-    localStorage.removeItem("raudhah_admin_authed");
-    navigate("/admin/login");
-  }
-
   function toggleGallery(v) {
     setGalleryEnabled(v);
     localStorage.setItem("gallery_enabled", v ? "yes" : "no");
@@ -63,6 +59,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminTopbar subtitle="Dashboard" />
+
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -74,17 +72,11 @@ export default function AdminDashboard() {
 
           <div className="flex gap-3">
             <Link
-              to="/"
+              to="/admin/gallery"
               className="px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 transition text-sm font-semibold"
             >
-              View Site
+              Gallery Checklist
             </Link>
-            <button
-              onClick={logout}
-              className="px-4 py-2 rounded-xl bg-black text-white hover:bg-gray-800 transition text-sm font-semibold"
-            >
-              Logout
-            </button>
           </div>
         </div>
 
@@ -233,7 +225,7 @@ export default function AdminDashboard() {
           <div className="mt-6 border-t pt-4">
             {parts.length === 0 ? (
               <p className="text-sm text-gray-600">
-                No parts added yet. Add a few to test the dashboard.
+                No parts added yet. Add a few to test Shop enquiries.
               </p>
             ) : (
               <div className="space-y-3">
