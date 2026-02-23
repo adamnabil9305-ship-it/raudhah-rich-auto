@@ -1,64 +1,51 @@
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Services from "./pages/Services";
 import Shop from "./pages/Shop";
-import Gallery from "./pages/Gallery";
 import Locations from "./pages/Locations";
 import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+import Gallery from "./pages/Gallery";
 
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-import AdminGallery from "./pages/AdminGallery";
 import AdminInbox from "./pages/AdminInbox";
 import AdminSettings from "./pages/AdminSettings";
+import AdminGallery from "./pages/AdminGallery";
+
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Routes>
-        <Route
-          path="/admin/*"
-          element={
-            <main className="flex-1">
-              <Routes>
-                <Route path="login" element={<AdminLogin />} />
-                <Route path="" element={<AdminDashboard />} />
-                <Route path="gallery" element={<AdminGallery />} />
-                <Route path="inbox" element={<AdminInbox />} />
-                <Route path="settings" element={<AdminSettings />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-          }
-        />
+    <Router>
+      <Navbar />
 
-        <Route
-          path="*"
-          element={
-            <>
-              <Navbar />
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/services" element={<Services />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/gallery" element={<Gallery />} />
-                  <Route path="/locations" element={<Locations />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-              <Footer />
-              <WhatsAppFloat />
-            </>
-          }
-        />
+      <Routes>
+        {/* Public Pages */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/locations" element={<Locations />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/gallery" element={<Gallery />} />
+
+        {/* Admin Pages */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/inbox" element={<AdminInbox />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/admin/gallery" element={<AdminGallery />} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </div>
+
+      <WhatsAppFloat />
+    </Router>
   );
 }
