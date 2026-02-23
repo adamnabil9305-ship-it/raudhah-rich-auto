@@ -1,176 +1,214 @@
+// src/pages/About.jsx
 import React from "react";
-import { Link } from "react-router-dom";
-
-const timeline = [
-  { year: "2014", text: "Planning, feasibility study & basic setup." },
-  { year: "2015", text: "Official operations & registration (Raudhah Rich Auto Services). Became an authorized dealer/appointment collaborations." },
-  { year: "2016", text: "Expanded specialization (including air-conditioning) and grew technical scope." },
-  { year: "2017", text: "Expanded with additional branch operations." },
-  { year: "2019", text: "Added tyre scope and became a full one-stop automotive center." },
-  { year: "2020", text: "Acquisition and upgrade to Sdn Bhd." },
-  { year: "2021", text: "HQ office setup + continued expansion strategy." },
-];
-
-const scope = [
-  "One-stop center for automotive repairs, scheduled maintenance & spare parts",
-  "Specialization in automotive air-conditioning system maintenance, re-conditioning & upgrading",
-  "Personal coaching for education institutions",
-  "Community contributions and welfare services",
-];
 
 export default function About() {
+  const cards = [
+    {
+      title: "Our Vision",
+      text: "To be a recognized Bumiputera Service Center delivering best in class quality output.",
+    },
+    {
+      title: "Our Mission",
+      text: "To facilitate high quality service, provide clear consultation, and offer the best solutions with the right options.",
+    },
+    {
+      title: "Business Scope",
+      text: "A one stop center for repairs, scheduled maintenance, spare parts, and air-conditioning specialization.",
+    },
+  ];
+
+  const highlights = [
+    { title: "Established", value: "2015" },
+    { title: "One Stop Solution", value: "Service & Repairs" },
+    { title: "Key Specialty", value: "Aircond Systems" },
+    { title: "Growing", value: "Multiple Outlets" },
+  ];
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      {/* Header */}
-      <div className="bg-slate-50 border-b">
-        <div className="mx-auto max-w-6xl px-4 py-10">
-          <h1 className="text-4xl font-extrabold tracking-tight">About Us</h1>
-          <p className="mt-3 text-slate-600 max-w-3xl">
-            Learn more about Raudhah Rich Auto — our story, our mission, and what we do as a
-            trusted automotive service center in Selangor & Batu Caves.
+      {/* HERO */}
+      <section className="relative h-[60vh] min-h-[420px] flex items-center justify-center overflow-hidden">
+        {/* Background image (put in /public as rf-workshop.jpg) */}
+        <img
+          src="/rf-workshop.png"
+          alt="Raudhah Rich Auto workshop"
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => {
+            // Hide broken image icon if user hasn't added image yet
+            e.currentTarget.style.display = "none";
+          }}
+        />
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/55 to-red-700/35" />
+
+        {/* Content */}
+        <div className="relative z-10 px-6 text-center max-w-4xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-sm text-white/90 backdrop-blur">
+            <span className="h-2 w-2 rounded-full bg-red-400" />
+            Raudhah Rich Auto Sdn Bhd
+          </div>
+
+          <h1 className="mt-6 text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+            Start Your Impossible
+          </h1>
+
+          <p className="mt-4 text-base md:text-lg text-white/90 leading-relaxed">
+            Through innovation and passion, we deliver ever-better service outputs and enrich
+            the lives of the community — built from zero since 2015.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              to="/contact"
-              className="rounded-xl bg-black px-5 py-2.5 text-white font-semibold hover:bg-slate-800 transition"
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="/contact"
+              className="w-full sm:w-auto rounded-xl bg-red-600 px-6 py-3 font-semibold text-white shadow hover:bg-red-700 transition"
             >
               Contact Us
-            </Link>
-            <Link
-              to="/services"
-              className="rounded-xl border border-slate-300 px-5 py-2.5 font-semibold hover:bg-white transition"
+            </a>
+
+            <a
+              href="/services"
+              className="w-full sm:w-auto rounded-xl bg-white/10 px-6 py-3 font-semibold text-white border border-white/15 hover:bg-white/15 transition backdrop-blur"
             >
               View Services
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Story */}
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold">Our Story</h2>
-            <p className="mt-3 text-slate-700 leading-relaxed">
-              Raudhah Rich Auto began its journey in 2015, growing from zero into a brand that
-              believes in doing things differently — focusing on service output, integrity, and
-              customer perspective from day one. Over the years, the company expanded through
-              acquisitions and new branches, continuing to grow with innovation and passion.
-            </p>
-            <p className="mt-4 text-slate-700 leading-relaxed">
-              Our guiding spirit is <span className="font-semibold">“Start Your Impossible”</span> —
-              a promise to customers and society to continuously improve, challenge limits, and
-              build a dependable one-stop automobile solution.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h3 className="font-bold text-lg">What we focus on</h3>
-            <ul className="mt-4 space-y-3 text-slate-700">
-              <li className="flex gap-2">
-                <span className="mt-1 h-2 w-2 rounded-full bg-red-600" />
-                Giving ever-better service outputs
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-1 h-2 w-2 rounded-full bg-red-600" />
-                Enriching the lives of the community
-              </li>
-            </ul>
-
-            <div className="mt-6 rounded-xl bg-slate-50 p-4">
-              <div className="text-sm text-slate-500">Established</div>
-              <div className="text-xl font-extrabold">2015</div>
-              <div className="mt-2 text-sm text-slate-600">
-                Growing with multiple outlets across Shah Alam & Batu Caves.
-              </div>
-            </div>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Vision & Mission */}
-      <section className="bg-slate-50 border-y">
-        <div className="mx-auto max-w-6xl px-4 py-12 grid gap-8 lg:grid-cols-2">
-          <div className="rounded-2xl bg-white p-7 shadow-sm border">
-            <h2 className="text-2xl font-bold">Vision</h2>
-            <p className="mt-3 text-slate-700 leading-relaxed">
-              To be a recognized Bumiputera Service Center delivering best-in-class quality output.
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-white p-7 shadow-sm border">
-            <h2 className="text-2xl font-bold">Mission</h2>
-            <ol className="mt-4 space-y-3 text-slate-700 list-decimal list-inside">
-              <li>Facilitate high-quality service towards customer satisfaction</li>
-              <li>Provide consultation and clear advisory for car maintenance awareness</li>
-              <li>Offer the best potential solution and options with honest verdicts</li>
-            </ol>
-            <p className="mt-4 text-slate-600 text-sm">
-              We strive to practice proper SOPs, use the right equipment & quality parts, and grow
-              personnel competency with integrity and dedication.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Business Scope */}
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="text-2xl font-bold">What We Do</h2>
-        <p className="mt-3 text-slate-600 max-w-3xl">
-          A practical, real-world scope that covers repairs, maintenance, parts, and service
-          excellence — backed by experience and continuous improvement.
-        </p>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {scope.map((item) => (
-            <div key={item} className="rounded-2xl border p-6 shadow-sm bg-white">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 h-2.5 w-2.5 rounded-full bg-red-600" />
-                <p className="text-slate-700">{item}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Timeline */}
-      <section className="bg-slate-50 border-t">
-        <div className="mx-auto max-w-6xl px-4 py-12">
-          <h2 className="text-2xl font-bold">Timeline & Growth</h2>
-          <p className="mt-3 text-slate-600 max-w-3xl">
-            Key milestones that shaped the company’s expansion and service coverage.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {timeline.map((t) => (
-              <div key={t.year} className="rounded-2xl border bg-white p-6 shadow-sm">
-                <div className="text-sm text-slate-500">{t.year}</div>
-                <div className="mt-1 font-semibold text-slate-900">{t.text}</div>
+      {/* HIGHLIGHTS */}
+      <section className="px-6 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {highlights.map((h) => (
+              <div
+                key={h.title}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <p className="text-sm text-slate-500">{h.title}</p>
+                <p className="mt-2 text-xl font-bold text-slate-900">{h.value}</p>
+                <div className="mt-4 h-1 w-12 rounded-full bg-red-600" />
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10 rounded-2xl bg-black text-white p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <div className="text-lg font-bold">Ready to service your car?</div>
-              <div className="text-white/80 mt-1">
-                Reach us via WhatsApp or visit the nearest branch.
+      {/* ABOUT + IMAGE */}
+      <section className="px-6 pb-14">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+            <h2 className="text-2xl font-extrabold">About Us</h2>
+            <p className="mt-4 text-slate-700 leading-relaxed">
+              Raudhah Rich Auto Sdn Bhd is a one stop automobile solution center focusing on
+              quality workmanship, clear consultation, and customer-first service.
+            </p>
+            <p className="mt-4 text-slate-700 leading-relaxed">
+              We are committed to correct SOPs, proper calibration, and using the right tools
+              and parts quality — so your car gets the best care every time.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              <span className="rounded-full bg-red-50 text-red-700 border border-red-100 px-3 py-1 text-sm font-medium">
+                Automotive Repairs
+              </span>
+              <span className="rounded-full bg-red-50 text-red-700 border border-red-100 px-3 py-1 text-sm font-medium">
+                Aircond Specialist
+              </span>
+              <span className="rounded-full bg-red-50 text-red-700 border border-red-100 px-3 py-1 text-sm font-medium">
+                Maintenance
+              </span>
+              <span className="rounded-full bg-red-50 text-red-700 border border-red-100 px-3 py-1 text-sm font-medium">
+                Spare Parts
+              </span>
+            </div>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 min-h-[320px]">
+            {/* Put in /public as rf-tools.jpg or rf-team.jpg */}
+            <img
+              src="/rf-tools.png"
+              alt="Workshop tools"
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-transparent to-red-600/20" />
+
+            <div className="relative p-6">
+              <div className="inline-block rounded-xl bg-white/85 backdrop-blur px-4 py-2 text-slate-900 border border-white/60">
+                <p className="text-sm font-semibold">Our Commitment</p>
+                <p className="text-sm text-slate-600">is to YOUR satisfaction.</p>
               </div>
             </div>
-
-            <Link
-              to="/contact"
-              className="rounded-xl bg-white text-black px-5 py-2.5 font-semibold hover:bg-slate-100 transition"
-            >
-              Go to Contact
-            </Link>
           </div>
         </div>
       </section>
 
-      <footer className="py-10 text-center text-sm text-slate-500">
-        © {new Date().getFullYear()} Raudhah Rich Auto Services
+      {/* CARDS */}
+      <section className="bg-slate-50 border-t border-b">
+        <div className="px-6 py-14 max-w-6xl mx-auto">
+          <h2 className="text-2xl font-extrabold">What We Stand For</h2>
+          <p className="mt-3 text-slate-600 max-w-3xl">
+            Clear, customer-first solutions — with quality outputs you can trust.
+          </p>
+
+          <div className="mt-8 grid md:grid-cols-3 gap-5">
+            {cards.map((c) => (
+              <div
+                key={c.title}
+                className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="h-10 w-10 rounded-2xl bg-red-600/10 border border-red-600/15 grid place-items-center">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
+                  </span>
+                  <h3 className="text-lg font-bold">{c.title}</h3>
+                </div>
+                <p className="mt-4 text-slate-700 leading-relaxed">{c.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 py-14">
+        <div className="max-w-6xl mx-auto rounded-3xl overflow-hidden border border-slate-200 shadow-sm">
+          <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-red-700 px-8 py-12 text-white">
+            <h2 className="text-2xl md:text-3xl font-extrabold">
+              Ready to service your car with confidence?
+            </h2>
+            <p className="mt-3 text-white/90 max-w-2xl">
+              Book a visit or ask for consultation — we’ll recommend the best options with clear
+              explanations.
+            </p>
+
+            <div className="mt-7 flex flex-col sm:flex-row gap-3">
+              <a
+                href="/contact"
+                className="rounded-xl bg-white text-slate-900 px-6 py-3 font-semibold hover:bg-white/90 transition text-center"
+              >
+                Contact / Booking
+              </a>
+              <a
+                href="/services"
+                className="rounded-xl bg-white/10 border border-white/20 px-6 py-3 font-semibold hover:bg-white/15 transition text-center"
+              >
+                See Our Services
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER STRIP */}
+      <footer className="px-6 py-8 border-t bg-white">
+        <div className="max-w-6xl mx-auto text-sm text-slate-500 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Raudhah Rich Auto Sdn Bhd</p>
+          <p className="text-slate-400">Built with care • Red / Black brand theme</p>
+        </div>
       </footer>
     </div>
   );
