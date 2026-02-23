@@ -4,12 +4,22 @@ import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close menu on resize to desktop
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   const nav = [
@@ -21,23 +31,27 @@ export default function Navbar() {
     { name: "Contact", to: "/contact" },
   ];
 
+  const baseHeader =
+    "sticky top-0 z-50 transition-colors duration-200";
+  const bgHeader = scrolled
+    ? "bg-black/90 backdrop-blur border-b border-white/10"
+    : "bg-black";
+
   return (
-    <header
-      className={[
-        "sticky top-0 z-50",
-        scrolled ? "bg-black/90 backdrop-blur border-b border-white/10" : "bg-black",
-      ].join(" ")}
-    >
+    <header className={`${baseHeader} ${bgHeader}`}>
       <div className="mx-auto max-w-6xl px-4">
         <div className="h-16 flex items-center justify-between gap-4">
           {/* Brand */}
-          <Link to="/" className="flex items-center gap-3">
+          <Link
+            to="/"
+            className="flex items-center gap-3"
+            onClick={() => setOpen(false)}
+          >
             <img
               src="/logo.png"
               alt="Raudhah Rich Auto Logo"
               className="h-10 w-10 rounded-full bg-white p-1 object-contain"
               onError={(e) => {
-                // If logo missing, fallback to text so navbar doesn't look broken
                 e.currentTarget.style.display = "none";
               }}
             />
@@ -46,7 +60,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Nav */}
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
             {nav.map((item) => (
               <NavLink
@@ -63,7 +77,63 @@ export default function Navbar() {
               </NavLink>
             ))}
           </nav>
+
+          {/* Mobile button */}
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-white hover:bg-white/15 transition"
+            aria-label="Open menu"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {/* Simple hamburger / close icon */}
+            <span className="relative block h-5 w-5">
+              <span
+                className={[
+                  "absolute left-0 top-1 block h-0.5 w-5 bg-white transition",
+                  open ? "translate-y-2 rotate-45" : "",
+                ].join(" ")}
+              />
+              <span
+                className={[
+                  "absolute left-0 top-2.5 block h-0.5 w-5 bg-white transition",
+                  open ? "opacity-0" : "opacity-100",
+                ].join(" ")}
+              />
+              <span
+                className={[
+                  "absolute left-0 top-4 block h-0.5 w-5 bg-white transition",
+                  open ? "-translate-y-2 -rotate-45" : "",
+                ].join(" ")}
+              />
+            </span>
+          </button>
         </div>
+
+        {/* Mobile dropdown */}
+        {open && (
+          <div className="md:hidden pb-4">
+            <div className="rounded-2xl border border-white/10 bg-black/95 overflow-hidden">
+              <div className="flex flex-col">
+                {nav.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className={({ isActive }) =>
+                      [
+                        "px-4 py-3 text-sm font-medium transition border-b border-white/10 last:border-b-0",
+                        isActive ? "text-white bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10",
+                      ].join(" ")
+                    }
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
