@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import WhatsAppFloat from "./components/WhatsAppFloat";
@@ -21,11 +21,11 @@ import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
-    <Router>
+    <>
       <Navbar />
 
       <Routes>
-        {/* Public Pages */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
@@ -34,7 +34,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Gallery />} />
 
-        {/* Admin Pages */}
+        {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/inbox" element={<AdminInbox />} />
@@ -46,6 +46,6 @@ export default function App() {
       </Routes>
 
       <WhatsAppFloat />
-    </Router>
+    </>
   );
 }
