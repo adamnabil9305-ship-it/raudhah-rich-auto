@@ -1,10 +1,11 @@
 // src/components/Navbar.jsx
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -22,6 +23,12 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Close menu when route changes (back/forward/programmatic nav)
+  useEffect(() => {
+    setOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   const nav = [
     { name: "Home", to: "/" },
     { name: "About", to: "/about" },
@@ -31,8 +38,7 @@ export default function Navbar() {
     { name: "Contact", to: "/contact" },
   ];
 
-  const baseHeader =
-    "sticky top-0 z-50 transition-colors duration-200";
+  const baseHeader = "sticky top-0 z-50 transition-colors duration-200";
   const bgHeader = scrolled
     ? "bg-black/90 backdrop-blur border-b border-white/10"
     : "bg-black";
@@ -42,11 +48,7 @@ export default function Navbar() {
       <div className="mx-auto max-w-6xl px-4">
         <div className="h-16 flex items-center justify-between gap-4">
           {/* Brand */}
-          <Link
-            to="/"
-            className="flex items-center gap-3"
-            onClick={() => setOpen(false)}
-          >
+          <Link to="/" className="flex items-center gap-3">
             <img
               src="/logo.png"
               alt="Raudhah Rich Auto Logo"
@@ -82,11 +84,11 @@ export default function Navbar() {
           <button
             type="button"
             className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-white hover:bg-white/15 transition"
-            aria-label="Open menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
           >
-            {/* Simple hamburger / close icon */}
             <span className="relative block h-5 w-5">
               <span
                 className={[
@@ -112,18 +114,19 @@ export default function Navbar() {
 
         {/* Mobile dropdown */}
         {open && (
-          <div className="md:hidden pb-4">
+          <div id="mobile-menu" className="md:hidden pb-4">
             <div className="rounded-2xl border border-white/10 bg-black/95 overflow-hidden">
               <div className="flex flex-col">
                 {nav.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    onClick={() => setOpen(false)}
                     className={({ isActive }) =>
                       [
                         "px-4 py-3 text-sm font-medium transition border-b border-white/10 last:border-b-0",
-                        isActive ? "text-white bg-white/10" : "text-white/80 hover:text-white hover:bg-white/10",
+                        isActive
+                          ? "text-white bg-white/10"
+                          : "text-white/80 hover:text-white hover:bg-white/10",
                       ].join(" ")
                     }
                   >
