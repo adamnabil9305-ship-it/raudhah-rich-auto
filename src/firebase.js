@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSy.....",
+  apiKey: "AIzaSyBPXcSWqHVAkfNJytkqDzSLLjJX1n_LQQs",
   authDomain: "raudhah-auto-admin.firebaseapp.com",
   projectId: "raudhah-auto-admin",
   storageBucket: "raudhah-auto-admin.firebasestorage.app",

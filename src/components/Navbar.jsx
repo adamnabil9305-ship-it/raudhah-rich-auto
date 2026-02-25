@@ -14,7 +14,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close menu on resize to desktop
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth >= 768) setOpen(false);
@@ -23,7 +22,6 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Close menu when route changes (back/forward/programmatic nav)
   useEffect(() => {
     setOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +45,6 @@ export default function Navbar() {
     <header className={`${baseHeader} ${bgHeader}`}>
       <div className="mx-auto max-w-6xl px-4">
         <div className="h-16 flex items-center justify-between gap-4">
-          {/* Brand */}
           <Link to="/" className="flex items-center gap-3">
             <img
               src="/logo.png"
@@ -62,7 +59,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
             {nav.map((item) => (
               <NavLink
@@ -80,7 +76,6 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Mobile button */}
           <button
             type="button"
             className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-white hover:bg-white/15 transition"
@@ -112,7 +107,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile dropdown */}
         {open && (
           <div id="mobile-menu" className="md:hidden pb-4">
             <div className="rounded-2xl border border-white/10 bg-black/95 overflow-hidden">

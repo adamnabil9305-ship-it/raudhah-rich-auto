@@ -1,18 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+// src/pages/AdminDashboard.jsx
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+
+import { auth } from "../firebase";
 import AdminTopbar from "../components/AdminTopbar";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.title = "Admin Dashboard | Raudhah Rich Auto";
-    const isAuthed = localStorage.getItem("raudhah_admin_authed") === "yes";
-    if (!isAuthed) navigate("/admin/login");
-  }, [navigate]);
-
   const [promoTitle, setPromoTitle] = useState(
-    localStorage.getItem("promo_title") || "Promo slot (update when client confirms)"
+    localStorage.getItem("promo_title") ||
+      "Promo slot (update when client confirms)"
   );
   const [promoDesc, setPromoDesc] = useState(
     localStorage.getItem("promo_desc") ||
@@ -26,8 +25,14 @@ export default function AdminDashboard() {
 
   const [newPart, setNewPart] = useState({ name: "", price: "", branch: "" });
 
-  const branches = useMemo(() => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"], []);
-  const [galleryEnabled, setGalleryEnabled] = useState(localStorage.getItem("gallery_enabled") === "yes");
+  const branches = useMemo(
+    () => ["Seksyen 23", "Seksyen 15", "U12", "Batu Caves"],
+    []
+  );
+
+  const [galleryEnabled, setGalleryEnabled] = useState(
+    localStorage.getItem("gallery_enabled") === "yes"
+  );
 
   function savePromo() {
     localStorage.setItem("promo_title", promoTitle);
@@ -37,10 +42,16 @@ export default function AdminDashboard() {
 
   function addPart() {
     if (!newPart.name.trim()) return;
+
     const updated = [
       ...parts,
-      { id: crypto.randomUUID(), ...newPart, createdAt: new Date().toISOString() },
+      {
+        id: crypto.randomUUID(),
+        ...newPart,
+        createdAt: new Date().toISOString(),
+      },
     ];
+
     setParts(updated);
     localStorage.setItem("parts_list", JSON.stringify(updated));
     setNewPart({ name: "", price: "", branch: "" });
@@ -57,6 +68,15 @@ export default function AdminDashboard() {
     localStorage.setItem("gallery_enabled", v ? "yes" : "no");
   }
 
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+      navigate("/admin/login", { replace: true });
+    } catch (e) {
+      alert("Logout failed. Please try again.");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminTopbar subtitle="Dashboard" />
@@ -69,6 +89,13 @@ export default function AdminDashboard() {
               Phase 2 (Admin-Lite): changes save in this browser only (localStorage).
             </p>
           </div>
+
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-xl border bg-white hover:bg-gray-100 transition text-sm font-semibold"
+          >
+            Logout
+          </button>
         </div>
 
         {/* Phase Progress */}
@@ -241,7 +268,10 @@ export default function AdminDashboard() {
             ) : (
               <div className="space-y-3">
                 {parts.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between gap-4 border rounded-xl p-4">
+                  <div
+                    key={p.id}
+                    className="flex items-center justify-between gap-4 border rounded-xl p-4"
+                  >
                     <div>
                       <p className="font-semibold">{p.name}</p>
                       <p className="text-sm text-gray-600">
